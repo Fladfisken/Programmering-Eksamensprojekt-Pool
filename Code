@@ -1,49 +1,71 @@
-// https://editor.p5js.org/KV-220/sketches/sjj76_QIC
-
+// Global balls variables
 let r = 20;
 let rows = 5;
 let balls = [];
 let d = 2 * r;
 
+let tri;
 let ballFont;
 
-// physics
-let ballFriction = 0.9;
-let bordFric = 0.99;
+// Physics for balls
+let wallFric = 0.9;
+let feltFric = 0.99;
 let restitution = 0.95;
-let surfaceFric = 0.99;
+let ballFric = 0.99;
 
 function preload() {
   ballFont = loadFont("UMTypewriter-BoldItalic.otf");
 }
 
 function setup() {
-  createCanvas(800, 400);
+  createCanvas(600, 300);
   textFont(ballFont);
 
-  let tri = sqrt(3) / 2;
+  tri = sqrt(3) / 2;
 
-  // rack position
+  // Generates positions in triangle latice for all balls
+  let positions = [];
+
   let x0 = width - (d * (rows - 1) * tri + r + (height / 2) * tri);
   let y0 = height / 2;
 
-  // cue ball
-  let px = (height / 2) * tri;
-  let py = height / 2;
-
-  balls.push(new Ball(px, py, 0, 0, 0)); // cue ball = index 0
-
-  let index = 1;
-
-  // triangle rack
   for (let row = 0; row < rows; row++) {
     let x = x0 + row * d * tri;
 
     for (let col = 0; col <= row; col++) {
       let y = y0 - (row * d) / 2 + col * d;
+      positions.push({ x, y, row, col });
+    }
+  }
 
-      balls.push(new Ball(x, y, 0, 0, index));
-      index++;
+  // Finds center position for 8-ball
+  let centerIndex = (rows%4)*4;
+
+  // Creates numbers for indexing balls
+  let nums = [];
+  for (let i = 1; i <= 15; i++) {
+    if (i !== 8) nums.push(i);
+  }
+
+  shuffle(nums, true);
+
+  // Places balls
+  // Cue ball
+  let px = (height / 2) * tri;
+  let py = height / 2;
+  balls.push(new Ball(px, py, 0, 0, 0));
+
+  let numIndex = 0;
+
+  // Other balls
+  for (let i = 0; i < positions.length; i++) {
+    let pos = positions[i];
+
+    if (i === centerIndex) {
+      balls.push(new Ball(pos.x, pos.y, 0, 0, 8));
+    } else {
+      balls.push(new Ball(pos.x, pos.y, 0, 0, nums[numIndex]));
+      numIndex++;
     }
   }
 }
@@ -51,20 +73,17 @@ function setup() {
 function draw() {
   background(60, 120, 20);
 
-  // move + walls
   for (let b of balls) {
     b.move();
     b.wall();
   }
 
-  // collisions
   for (let i = 0; i < balls.length; i++) {
     for (let j = i + 1; j < balls.length; j++) {
       touchingBalls(balls[i], balls[j]);
     }
   }
 
-  // draw
   for (let b of balls) {
     b.show();
   }
@@ -75,96 +94,159 @@ class Ball {
     this.pos = createVector(x, y);
     this.vel = createVector(vx, vy);
     this.num = num;
+
+    this.striped = num >= 9;
+    this.pocketed = false;
+
+    this.color = getBallColor(num);
   }
 
   move() {
+    if (this.pocketed) return;
     this.pos.add(this.vel);
-    this.vel.mult(bordFric);
+    this.vel.mult(feltFric);
   }
 
   wall() {
+    if (this.pocketed) return;
+
     if (this.pos.x < r) {
       this.pos.x = r;
-      this.vel.x *= -ballFriction;
+      this.vel.x *= -wallFric;
     }
     if (this.pos.x > width - r) {
       this.pos.x = width - r;
-      this.vel.x *= -ballFriction;
+      this.vel.x *= -wallFric;
     }
     if (this.pos.y < r) {
       this.pos.y = r;
-      this.vel.y *= -ballFriction;
+      this.vel.y *= -wallFric;
     }
     if (this.pos.y > height - r) {
       this.pos.y = height - r;
-      this.vel.y *= -ballFriction;
+      this.vel.y *= -wallFric;
     }
   }
 
   show() {
+    if (this.pocketed) return;
+
     stroke(20);
-    strokeWeight(1);
 
-    // cue ball
-    if (this.num === 0) {
-      fill(240);
-      circle(this.pos.x, this.pos.y, d);
-      return;
-    }
-
-    // normal balls
-    fill(180);
+    // base
+    fill(255);
     circle(this.pos.x, this.pos.y, d);
 
+    // stripe or solid
+    if (this.num !== 0) {
+      fill(this.color);
+
+      if (this.striped) {
+        rectMode(CENTER);
+        rect(this.pos.x, this.pos.y, d, r); // stripe
+      } else {
+        circle(this.pos.x, this.pos.y, d);
+      }
+    }
+
     // number
-    fill(0);
-    textAlign(CENTER, CENTER);
-    textSize((3 * r) / 2);
-    text(this.num, this.pos.x, this.pos.y + 2);
+    if (this.num !== 0) {
+      fill(255);
+      circle(this.pos.x, this.pos.y, r);
+
+      fill(0);
+      textAlign(CENTER, CENTER);
+      textSize(r);
+      text(this.num, this.pos.x, this.pos.y + 1);
+    }
   }
 }
 
 function touchingBalls(b1, b2) {
+  // ignore balls in pockets
+  if (b1.pocketed || b2.pocketed) return;
+
   let dx = b2.pos.x - b1.pos.x;
   let dy = b2.pos.y - b1.pos.y;
   let dist = sqrt(dx * dx + dy * dy);
 
   if (dist < 2 * r) {
+
+    // prevent division by zero
+    if (dist === 0) dist = 0.01;
+
+    // normal vector
     let nx = dx / dist;
     let ny = dy / dist;
 
+    // tangent vector
     let tx = -ny;
     let ty = nx;
 
+    // dot products (tangent)
     let dpTan1 = b1.vel.x * tx + b1.vel.y * ty;
     let dpTan2 = b2.vel.x * tx + b2.vel.y * ty;
 
+    // dot products (normal)
     let dpNorm1 = b1.vel.x * nx + b1.vel.y * ny;
     let dpNorm2 = b2.vel.x * nx + b2.vel.y * ny;
 
-    dpTan1 *= surfaceFric;
-    dpTan2 *= surfaceFric;
+    // apply surface friction
+    dpTan1 *= ballFric;
+    dpTan2 *= ballFric;
 
+    // swap + restitution
     let m1 = dpNorm2 * restitution;
     let m2 = dpNorm1 * restitution;
 
+    // new velocities
     b1.vel.x = tx * dpTan1 + nx * m1;
     b1.vel.y = ty * dpTan1 + ny * m1;
 
     b2.vel.x = tx * dpTan2 + nx * m2;
     b2.vel.y = ty * dpTan2 + ny * m2;
 
-    // separate balls
+    // separate overlapping balls
     let overlap = 2 * r - dist;
 
-    b1.pos.x -= (nx * overlap) / 2;
-    b1.pos.y -= (ny * overlap) / 2;
+    b1.pos.x -= nx * overlap / 2;
+    b1.pos.y -= ny * overlap / 2;
 
-    b2.pos.x += (nx * overlap) / 2;
-    b2.pos.y += (ny * overlap) / 2;
+    b2.pos.x += nx * overlap / 2;
+    b2.pos.y += ny * overlap / 2;
   }
 }
 
-function cueBallMove (mouseIsPressed){
+function getBallColor(num) {
+  switch (num) {
+    case 1:
+    case 9:
+      return color(240, 210, 30); // yellow
+    case 2:
+    case 10:
+      return color(50, 40, 200); // blue
+    case 3:
+    case 11:
+      return color(230, 40, 20); // red
+    case 4:
+    case 12:
+      return color(130, 40, 140); // purple
+    case 5:
+    case 13:
+      return color(230, 140, 20); // orange
+    case 6:
+    case 14:
+      return color(30, 100, 10); // green
+    case 7:
+    case 15:
+      return color(110, 20, 30); // maroon
+    case 8:
+      return color(20); // black
+    default:
+      return color(240,220,200); // cue ball
+  }
+}
+
+function hittingBalls (mouseIsPressed){
   
 }
