@@ -14,4 +14,6 @@ Draw.io (til eventuelle flowcharts m.v.): https://app.diagrams.net/
 ## Kilder & info
 Elastic collision (kugle rammer væg go brrr): https://en.wikipedia.org/wiki/Elastic_collision
 
+Kugle fysik: https://www.youtube.com/watch?v=NWkX9JCWCK0
+
 ## Dokumentation (I guess?? Ved ikke helt hvad der skal være her, men nu har dette afsnit)
