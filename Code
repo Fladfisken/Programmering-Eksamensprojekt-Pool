@@ -1,11 +1,21 @@
+// https://editor.p5js.org/KV-220/sketches/sjj76_QIC
+
 // Global balls variables
-let r = 20;
+let tableWidth = 800;
+let tableHeight = (tableWidth * 59) / 103;
+let playWidth = (tableWidth * 88) / 103;
+let playHeight = (tableHeight * 44) / 59;
+let r = ((tableWidth / 103) * 2.25) / 2;
 let rows = 5;
 let balls = [];
 let d = 2 * r;
+let allStopped = true;
 
 let tri;
 let ballFont;
+
+//Shooting
+let aimLenght = 200;
 
 // Physics for balls
 let wallFric = 0.9;
@@ -18,7 +28,7 @@ function preload() {
 }
 
 function setup() {
-  createCanvas(600, 300);
+  createCanvas(tableWidth, tableHeight);
   textFont(ballFont);
 
   tri = sqrt(3) / 2;
@@ -39,7 +49,7 @@ function setup() {
   }
 
   // Finds center position for 8-ball
-  let centerIndex = (rows%4)*4;
+  let centerIndex = (rows % 4) * 4;
 
   // Creates numbers for indexing balls
   let nums = [];
@@ -71,11 +81,17 @@ function setup() {
 }
 
 function draw() {
-  background(60, 120, 20);
+  background(120, 40, 20);
+  fill(60, 120, 20);
+  rectMode(CENTER);
+  rect(width / 2, height / 2, playWidth, playHeight);
 
+  allStopped = true;
   for (let b of balls) {
-    b.move();
-    b.wall();
+    if (b.vel.mag() > 0.05) {
+      allStopped = false;
+      break;
+    }
   }
 
   for (let i = 0; i < balls.length; i++) {
@@ -85,8 +101,16 @@ function draw() {
   }
 
   for (let b of balls) {
+    b.move();
+    b.wall();
     b.show();
   }
+
+  let cueX = balls[0].pos.x;
+  let cueY = balls[0].pos.y;
+  let aimAngle = atan2(mouseY - cueY, mouseX - cueX);
+  let shootingSpeed = createVector(cueX - mouseX, cueY - mouseY);
+  line(cueX, cueY, cueX - 200 * cos(aimAngle), cueY - 200 * sin(aimAngle));
 }
 
 class Ball {
@@ -105,25 +129,28 @@ class Ball {
     if (this.pocketed) return;
     this.pos.add(this.vel);
     this.vel.mult(feltFric);
+    if (this.vel.mag() < 0.05) {
+      this.vel.set(0, 0);
+    }
   }
 
   wall() {
     if (this.pocketed) return;
 
-    if (this.pos.x < r) {
-      this.pos.x = r;
+    if (this.pos.x < r + (tableWidth - playWidth) / 2) {
+      this.pos.x = r + (tableWidth - playWidth) / 2;
       this.vel.x *= -wallFric;
     }
-    if (this.pos.x > width - r) {
-      this.pos.x = width - r;
+    if (this.pos.x > width - (r + (tableWidth - playWidth) / 2)) {
+      this.pos.x = width - (r + (tableWidth - playWidth) / 2);
       this.vel.x *= -wallFric;
     }
-    if (this.pos.y < r) {
-      this.pos.y = r;
+    if (this.pos.y < r + (tableHeight - playHeight) / 2) {
+      this.pos.y = r + (tableHeight - playHeight) / 2;
       this.vel.y *= -wallFric;
     }
-    if (this.pos.y > height - r) {
-      this.pos.y = height - r;
+    if (this.pos.y > height - (r + (tableHeight - playHeight) / 2)) {
+      this.pos.y = height - (r + (tableHeight - playHeight) / 2);
       this.vel.y *= -wallFric;
     }
   }
@@ -143,7 +170,7 @@ class Ball {
 
       if (this.striped) {
         rectMode(CENTER);
-        rect(this.pos.x, this.pos.y, d, r); // stripe
+        rect(this.pos.x, this.pos.y, d, 0.9 * r); // stripe
       } else {
         circle(this.pos.x, this.pos.y, d);
       }
@@ -152,18 +179,17 @@ class Ball {
     // number
     if (this.num !== 0) {
       fill(255);
-      circle(this.pos.x, this.pos.y, r);
+      circle(this.pos.x, this.pos.y, 0.8 * r);
 
       fill(0);
       textAlign(CENTER, CENTER);
-      textSize(r);
-      text(this.num, this.pos.x, this.pos.y + 1);
+      textSize(0.67 * r);
+      text(this.num, this.pos.x - 0.04 * r, this.pos.y);
     }
   }
 }
 
 function touchingBalls(b1, b2) {
-  // ignore balls in pockets
   if (b1.pocketed || b2.pocketed) return;
 
   let dx = b2.pos.x - b1.pos.x;
@@ -171,49 +197,43 @@ function touchingBalls(b1, b2) {
   let dist = sqrt(dx * dx + dy * dy);
 
   if (dist < 2 * r) {
-
-    // prevent division by zero
     if (dist === 0) dist = 0.01;
 
-    // normal vector
+    // normal
     let nx = dx / dist;
     let ny = dy / dist;
 
-    // tangent vector
-    let tx = -ny;
-    let ty = nx;
+    // relative velocity
+    let rvx = b2.vel.x - b1.vel.x;
+    let rvy = b2.vel.y - b1.vel.y;
 
-    // dot products (tangent)
-    let dpTan1 = b1.vel.x * tx + b1.vel.y * ty;
-    let dpTan2 = b2.vel.x * tx + b2.vel.y * ty;
+    // velocity along normal
+    let relVel = rvx * nx + rvy * ny;
 
-    // dot products (normal)
-    let dpNorm1 = b1.vel.x * nx + b1.vel.y * ny;
-    let dpNorm2 = b2.vel.x * nx + b2.vel.y * ny;
+    // do NOT resolve if separating
+    if (relVel > 0) return;
 
-    // apply surface friction
-    dpTan1 *= ballFric;
-    dpTan2 *= ballFric;
+    // impulse (equal mass)
+    let impulse = (-(1 + restitution) * relVel) / 2;
 
-    // swap + restitution
-    let m1 = dpNorm2 * restitution;
-    let m2 = dpNorm1 * restitution;
+    let ix = impulse * nx;
+    let iy = impulse * ny;
 
-    // new velocities
-    b1.vel.x = tx * dpTan1 + nx * m1;
-    b1.vel.y = ty * dpTan1 + ny * m1;
+    b1.vel.x -= ix;
+    b1.vel.y -= iy;
 
-    b2.vel.x = tx * dpTan2 + nx * m2;
-    b2.vel.y = ty * dpTan2 + ny * m2;
+    b2.vel.x += ix;
+    b2.vel.y += iy;
 
-    // separate overlapping balls
+    // positional correction (reduced to avoid jitter)
     let overlap = 2 * r - dist;
+    let correction = overlap * 0.8;
 
-    b1.pos.x -= nx * overlap / 2;
-    b1.pos.y -= ny * overlap / 2;
+    b1.pos.x -= (nx * correction) / 2;
+    b1.pos.y -= (ny * correction) / 2;
 
-    b2.pos.x += nx * overlap / 2;
-    b2.pos.y += ny * overlap / 2;
+    b2.pos.x += (nx * correction) / 2;
+    b2.pos.y += (ny * correction) / 2;
   }
 }
 
@@ -243,10 +263,14 @@ function getBallColor(num) {
     case 8:
       return color(20); // black
     default:
-      return color(240,220,200); // cue ball
+      return color(240); // cue ball
   }
 }
 
-function hittingBalls (mouseIsPressed){
-  
+function mousePressed() {
+  console.log("clicked");
+
+  let cue = balls[0];
+  let force = createVector(cue.pos.x - mouseX, cue.pos.y - mouseY);
+  cue.vel.add(force.mult(0.2));
 }
