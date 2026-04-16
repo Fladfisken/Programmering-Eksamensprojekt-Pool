@@ -1,39 +1,39 @@
 // https://editor.p5js.org/KV-220/sketches/sjj76_QIC
 
-// Global balls variables
+// Debug items (Global)
+let ballHitbox = true;
+
+// Dimensions (Table)
 let tableWidth = 800;
 let tableHeight = (tableWidth * 59) / 103;
-let playWidth = (tableWidth * 88) / 103;
-let playHeight = (tableHeight * 44) / 59;
+
+// Ball variables (Balls)
 let r = ((tableWidth / 103) * 2.25) / 2;
-let rows = 5;
 let balls = [];
 let d = 2 * r;
-let allStopped = true;
 
-let tri;
-let ballFont;
-
-//Shooting
+// Shooting (Cue)
 let aimLenght = 200;
 
-// Physics for balls
+// Physics for balls (Physics)
 let wallFric = 0.9;
 let feltFric = 0.99;
 let restitution = 0.95;
 let ballFric = 0.99;
+let allStopped = true;
 
 function preload() {
-  ballFont = loadFont("UMTypewriter-BoldItalic.otf");
+  // Load balls and balls playing field
 }
 
 function setup() {
-  createCanvas(tableWidth, tableHeight);
-  textFont(ballFont);
+  createCanvas(tableWidth, tableHeight); // (Global)
 
-  tri = sqrt(3) / 2;
+  // (Balls)
+  let tri = sqrt(3) / 2;
+  let rows = 5;
 
-  // Generates positions in triangle latice for all balls
+  // Generates positions in triangle latice for all balls (Balls)
   let positions = [];
 
   let x0 = width - (d * (rows - 1) * tri + r + (height / 2) * tri);
@@ -48,44 +48,23 @@ function setup() {
     }
   }
 
-  // Finds center position for 8-ball
-  let centerIndex = (rows % 4) * 4;
-
-  // Creates numbers for indexing balls
-  let nums = [];
-  for (let i = 1; i <= 15; i++) {
-    if (i !== 8) nums.push(i);
-  }
-
-  shuffle(nums, true);
-
-  // Places balls
-  // Cue ball
+  // Front ball/start of ball triangle lattice (Balls)
   let px = (height / 2) * tri;
   let py = height / 2;
-  balls.push(new Ball(px, py, 0, 0, 0));
+  balls.push(new Ball(px, py, 0, 0));
 
-  let numIndex = 0;
-
-  // Other balls
+  // Other balls (Balls)
   for (let i = 0; i < positions.length; i++) {
     let pos = positions[i];
-
-    if (i === centerIndex) {
-      balls.push(new Ball(pos.x, pos.y, 0, 0, 8));
-    } else {
-      balls.push(new Ball(pos.x, pos.y, 0, 0, nums[numIndex]));
-      numIndex++;
-    }
+    balls.push(new Ball(pos.x, pos.y, 0, 0));
   }
 }
 
 function draw() {
-  background(120, 40, 20);
-  fill(60, 120, 20);
-  rectMode(CENTER);
-  rect(width / 2, height / 2, playWidth, playHeight);
+  // (game)
+  background(60, 120, 20);
 
+  // (Physics)
   allStopped = true;
   for (let b of balls) {
     if (b.vel.mag() > 0.05) {
@@ -100,12 +79,14 @@ function draw() {
     }
   }
 
+  // (Game)
   for (let b of balls) {
     b.move();
     b.wall();
     b.show();
   }
 
+  // (Cue)
   let cueX = balls[0].pos.x;
   let cueY = balls[0].pos.y;
   let aimAngle = atan2(mouseY - cueY, mouseX - cueX);
@@ -113,20 +94,16 @@ function draw() {
   line(cueX, cueY, cueX - 200 * cos(aimAngle), cueY - 200 * sin(aimAngle));
 }
 
+// (Balls)
 class Ball {
-  constructor(x, y, vx, vy, num) {
+  constructor(x, y, vx, vy, pocket) {
     this.pos = createVector(x, y);
     this.vel = createVector(vx, vy);
-    this.num = num;
-
-    this.striped = num >= 9;
-    this.pocketed = false;
-
-    this.color = getBallColor(num);
+    this.pocket = false;
   }
 
   move() {
-    if (this.pocketed) return;
+    if (this.pocket) return;
     this.pos.add(this.vel);
     this.vel.mult(feltFric);
     if (this.vel.mag() < 0.05) {
@@ -135,62 +112,42 @@ class Ball {
   }
 
   wall() {
-    if (this.pocketed) return;
+    if (this.pocket) return;
 
-    if (this.pos.x < r + (tableWidth - playWidth) / 2) {
-      this.pos.x = r + (tableWidth - playWidth) / 2;
+    if (this.pos.x < r) {
       this.vel.x *= -wallFric;
+      this.pos.x = r;
     }
-    if (this.pos.x > width - (r + (tableWidth - playWidth) / 2)) {
-      this.pos.x = width - (r + (tableWidth - playWidth) / 2);
+    if (this.pos.x > width - r) {
       this.vel.x *= -wallFric;
+      this.pos.x = width - r;
     }
-    if (this.pos.y < r + (tableHeight - playHeight) / 2) {
-      this.pos.y = r + (tableHeight - playHeight) / 2;
+    if (this.pos.y < r) {
       this.vel.y *= -wallFric;
+      this.pos.y = r;
     }
-    if (this.pos.y > height - (r + (tableHeight - playHeight) / 2)) {
-      this.pos.y = height - (r + (tableHeight - playHeight) / 2);
+    if (this.pos.y > height - r) {
       this.vel.y *= -wallFric;
+      this.pos.y = height - r;
     }
   }
 
   show() {
-    if (this.pocketed) return;
+    if (ballHitbox) {
+      if (this.pocket) return;
 
-    stroke(20);
+      stroke(20);
 
-    // base
-    fill(255);
-    circle(this.pos.x, this.pos.y, d);
-
-    // stripe or solid
-    if (this.num !== 0) {
-      fill(this.color);
-
-      if (this.striped) {
-        rectMode(CENTER);
-        rect(this.pos.x, this.pos.y, d, 0.9 * r); // stripe
-      } else {
-        circle(this.pos.x, this.pos.y, d);
-      }
-    }
-
-    // number
-    if (this.num !== 0) {
+      // base
       fill(255);
-      circle(this.pos.x, this.pos.y, 0.8 * r);
-
-      fill(0);
-      textAlign(CENTER, CENTER);
-      textSize(0.67 * r);
-      text(this.num, this.pos.x - 0.04 * r, this.pos.y);
+      circle(this.pos.x, this.pos.y, d);
     }
   }
 }
 
+// (Physics)
 function touchingBalls(b1, b2) {
-  if (b1.pocketed || b2.pocketed) return;
+  if (b1.pocket || b2.pocket) return;
 
   let dx = b2.pos.x - b1.pos.x;
   let dy = b2.pos.y - b1.pos.y;
@@ -237,39 +194,8 @@ function touchingBalls(b1, b2) {
   }
 }
 
-function getBallColor(num) {
-  switch (num) {
-    case 1:
-    case 9:
-      return color(240, 210, 30); // yellow
-    case 2:
-    case 10:
-      return color(50, 40, 200); // blue
-    case 3:
-    case 11:
-      return color(230, 40, 20); // red
-    case 4:
-    case 12:
-      return color(130, 40, 140); // purple
-    case 5:
-    case 13:
-      return color(230, 140, 20); // orange
-    case 6:
-    case 14:
-      return color(30, 100, 10); // green
-    case 7:
-    case 15:
-      return color(110, 20, 30); // maroon
-    case 8:
-      return color(20); // black
-    default:
-      return color(240); // cue ball
-  }
-}
-
+// (Cue)
 function mousePressed() {
-  console.log("clicked");
-
   let cue = balls[0];
   let force = createVector(cue.pos.x - mouseX, cue.pos.y - mouseY);
   cue.vel.add(force.mult(0.2));
