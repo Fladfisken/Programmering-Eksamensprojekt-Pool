@@ -7,6 +7,8 @@ Indeholder bl.a. kode, noter, idéer, dokumentation osv.
 ## Samarbejs- & Administrationslinks
 P5.JS: https://editor.p5js.org/KV-220/sketches/sjj76_QIC
 
+Old Code: https://editor.p5js.org/kromanndusen/sketches/5G242LLgC
+
 Trello board: https://trello.com/b/Rk0efNj1/programmering-pool-eksamensprojekt
 
 Draw.io (til eventuelle flowcharts m.v.): https://app.diagrams.net/
