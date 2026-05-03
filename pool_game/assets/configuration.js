@@ -1,0 +1,35 @@
+export let cueBall;
+export let yellowFull;
+export let blueFull;
+export let redFull;
+export let purpleFull;
+export let orangeFull;
+export let greenFull;
+export let maroonFull;
+export let eightBall;
+export let yellowStripe;
+export let blueStripe;
+export let redStripe;
+export let purpleStripe;
+export let orangeStripe;
+export let greenStripe;
+export let maroonStripe;
+
+export function preloadAssets() {
+  cueBall = loadImage('assets/cueBall.png');
+  yellowFull = loadImage('assets/1YellowFull.png');
+  blueFull = loadImage('assets/2BlueFull.png');
+  redFull = loadImage('assets/3RedFull.png');
+  purpleFull = loadImage('assets/4PurpleFull.png');
+  orangeFull = loadImage('assets/5OrangeFull.png');
+  greenFull = loadImage('assets/6GreenFull.png');
+  maroonFull = loadImage('assets/7MaroonFull.png');
+  eightBall = loadImage('assets/8Ball.png');
+  yellowStripe = loadImage('assets/9YellowStripe.png');
+  blueStripe = loadImage('assets/10BlueStripe.png');
+  redStripe = loadImage('assets/11RedStripe.png');
+  purpleStripe = loadImage('assets/12PurpleStripe.png');
+  orangeStripe = loadImage('assets/13OrangeStripe.png');
+  greenStripe = loadImage('assets/14GreenStripe.png');
+  maroonStripe = loadImage('assets/15MaroonStripe.png');
+}

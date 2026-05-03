@@ -4,8 +4,8 @@ import { drawSelector } from "./selector.js";
 export function setupMenu() { }
 
 export function drawMenu() {
-    background(30);
+  background(30);
 
-    drawSettings();
-    drawSelector();
+  drawSettings();
+  drawSelector();
 }

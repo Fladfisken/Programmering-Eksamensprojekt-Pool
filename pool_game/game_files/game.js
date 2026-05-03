@@ -4,18 +4,18 @@ import { drawPhysics } from "./physics.js";
 import { drawCue, mousePressedCue } from "./cue.js";
 
 export function setupGame() {
-    setupTable();
-    setupBalls();
+  setupTable();
+  setupBalls();
 }
 
 export function drawGame() {
-    background(60, 120, 20);
+  background(60, 120, 20);
 
-    drawPhysics();
-    drawBalls();
-    drawCue();
+  drawPhysics();
+  drawBalls();
+  drawCue();
 }
 
 export function mousePressedGame() {
-    mousePressedCue();
+  mousePressedCue();
 }
