@@ -16,7 +16,7 @@ export let greenStripe;
 export let maroonStripe;
 
 export function preloadAssets() {
-  cueBall = loadImage('assets/cueBall.png');
+  cueBall = loadImage('assets/0CueBall.png');
   yellowFull = loadImage('assets/1YellowFull.png');
   blueFull = loadImage('assets/2BlueFull.png');
   redFull = loadImage('assets/3RedFull.png');
