@@ -1,4 +1,4 @@
-import { setupTable } from "./table.js";
+import { setupTable, drawTable } from "./table.js";
 import { setupBalls, drawBalls } from "./balls.js";
 import { drawPhysics } from "./physics.js";
 import { drawCue, mousePressedCue } from "./cue.js";
@@ -9,8 +9,7 @@ export function setupGame() {
 }
 
 export function drawGame() {
-  background(60, 120, 20);
-
+  drawTable();
   drawPhysics();
   drawBalls();
   drawCue();

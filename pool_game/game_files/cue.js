@@ -10,6 +10,7 @@ export function drawCue() {
     (mouseY - height / 2) - cueY,
     (mouseX - width / 2) - cueX
   );
+  stroke(0)
   line(
     cueX, cueY,
     cueX - aimLenght * cos(aimAngle),
