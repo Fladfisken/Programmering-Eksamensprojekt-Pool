@@ -1,6 +1,6 @@
 import { gameScale } from "../global_variables.js";
 import { ballHitBox } from "../global_variables.js";
-import { tableWidth } from "./table.js";
+import { playWidth, playHeight } from "./table.js";
 import { wallFric, feltFric } from "./physics.js";
 import {
   cueBall, yellowFull, blueFull, redFull,
@@ -29,8 +29,11 @@ export function setupBalls() {
 
   let ballPositions = [];
 
-  let ballx0 = width - (ballDiameter * (ballRows - 1) * triangleLatticeRelation + ballRadius + (height / 2) * triangleLatticeRelation);
-  let bally0 = height / 2;
+  let ox = width / 2;
+  let oy = height / 2;
+
+  let ballx0 = ox + playWidth / 4
+  let bally0 = oy;
 
   for (let ballRow = 0; ballRow < ballRows; ballRow++) {
     let ballx = ballx0 + ballRow * ballDiameter * triangleLatticeRelation;
@@ -41,8 +44,8 @@ export function setupBalls() {
     }
   }
 
-  let cueBallx = (height / 2) * triangleLatticeRelation;
-  let cueBally = height / 2;
+  let cueBallx = ox - playWidth / 4; // roughly quarter way from left cushion
+  let cueBally = oy;
 
   balls.push(new Ball(cueBallx, cueBally, 0, 0, 0));
 
@@ -54,7 +57,6 @@ export function setupBalls() {
 export function drawBalls() {
   for (let b of balls) {
     b.move();
-    b.wall();
     b.show();
   }
 }
@@ -80,27 +82,6 @@ export class Ball {
     this.vel.mult(feltFric);
 
     if (speed < 0.05) { this.vel.set(0, 0); }
-  }
-
-  wall() {
-    if (this.pocket) return;
-
-    if (this.pos.x < ballRadius) {
-      this.vel.x *= -wallFric;
-      this.pos.x = ballRadius;
-    }
-    if (this.pos.x > width - ballRadius) {
-      this.vel.x *= -wallFric;
-      this.pos.x = width - ballRadius;
-    }
-    if (this.pos.y < ballRadius) {
-      this.vel.y *= -wallFric;
-      this.pos.y = ballRadius;
-    }
-    if (this.pos.y > height - ballRadius) {
-      this.vel.y *= -wallFric;
-      this.pos.y = height - ballRadius;
-    }
   }
 
   show() {
