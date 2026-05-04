@@ -1,20 +1,19 @@
-import { gameScale } from "../global_variables.js";
-import { balls } from "./balls.js";
+import { gameScale, getState, setState } from "../global_variables.js";
+import { balls, ballRadius } from "./balls.js";
 import { allStopped } from "./physics.js";
 
 let aimLength = 200 * gameScale;
 let aimAngle = 0;
-
 let isAiming = false;
 let isDragging = false;
-
 let savedAimAngle = 0;
 let savedMouseAngle = 0;
-
 let dragDistance = 0;
 let maxDrag = 80 * gameScale;
 let cueLength = 150 * gameScale;
 let dragStartPos = null;
+
+//let placePos = { x: width / 4, y: height / 2 };
 
 //avoid repeating these calculations
 function getPositions() {
@@ -45,8 +44,37 @@ function mouseIsNearCue(bx, by, mx, my) {
   return dist < 20 * gameScale;
 }
 
+// check if placement position overlaps any other ball
+function isValidPlacement(x, y) {
+  for (let i = 1; i < balls.length; i++) {
+    if (balls[i].pocket) continue;
+    let dx = (x + width / 2) - balls[i].pos.x;
+    let dy = (y + height / 2) - balls[i].pos.y;
+    let dist = sqrt(dx * dx + dy * dy);
+    if (dist < ballRadius * 2) return false;
+  }
+  return true;
+}
+
 export function drawCue() {
   let { bx, by, mx, my } = getPositions();
+
+  if (getState() === "placing") {
+    push();
+    ortho();
+    let valid = isValidPlacement(mx, my);
+    stroke(valid ? color(0, 255, 0) : color(255, 0, 0));
+    strokeWeight(2);
+    noFill();
+    circle(mx, my, ballRadius * 2);
+    fill(255);
+    textSize(14);
+    noStroke();
+    textAlign(LEFT, TOP);
+    text("Click to place cue ball", -width / 2 + 10, -height / 2 + 10);
+    pop();
+    return; // skip normal cue drawing
+  }
 
   if (isAiming) {
     let currentMouseAngle = atan2(my - by, mx - bx);
@@ -88,6 +116,19 @@ export function drawCue() {
 export function mousePressedCue() {
   let { bx, by, mx, my } = getPositions();
 
+  if(getState() === "settings") return;
+
+  if (getState() === "placing") {
+    if (isValidPlacement(mx, my)) {
+      balls[0].pos.x = mx + width / 2;
+      balls[0].pos.y = my + height / 2;
+      balls[0].vel.set(0, 0);
+      balls[0].pocket = false; // bring it back
+      setState("game");
+    }
+    return;
+  }
+
   // check if mouse is near cue to decide mode
   if(allStopped){
     if (mouseIsNearCue(bx, by, mx, my)) {
@@ -118,3 +159,5 @@ export function mouseReleasedCue() {
   dragDistance = 0;
   dragStartPos = null;
 }
+
+export function mouseMovedCue() { }
