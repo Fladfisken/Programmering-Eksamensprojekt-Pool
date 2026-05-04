@@ -2,6 +2,7 @@ import {
   setupGame,
   drawGame,
   mousePressedGame,
+  mouseReleasedGame,
 } from "./game_files/game.js";
 import { setupMenu, drawMenu } from "./menu_files/menu.js";
 import { preloadAssets } from "./assets/configuration.js";
@@ -32,4 +33,8 @@ window.mousePressed = function () {
   if (state === "game") {
     mousePressedGame();
   }
+};
+
+window.mouseReleased = function () {
+  if (state === "game") mouseReleasedGame();
 };
