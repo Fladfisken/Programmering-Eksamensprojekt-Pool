@@ -16,6 +16,7 @@ export let balls = [];
 let ballTextures = [];
 
 export function setupBalls() {
+  balls.length = 0; // Undgår bolde ikke slettes efter et spil
   ballTextures = [
     cueBall, yellowFull, blueFull, redFull,
     purpleFull, orangeFull, greenFull, maroonFull,
