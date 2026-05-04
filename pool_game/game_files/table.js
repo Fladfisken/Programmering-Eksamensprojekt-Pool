@@ -1,4 +1,5 @@
 import { gameScale, tableHitBox } from "../global_variables.js";
+import { tableExp } from "../assets/configuration.js";
 
 export let tableWidth = 816 * gameScale;
 export let tableHeight = 464 * gameScale;
@@ -7,7 +8,7 @@ export let playHeight = 352 * gameScale;
 export let cushionWidth = 16 * gameScale;
 export let pocketDiameter = 36 * gameScale;
 export let sidePocketMouth = 42 * gameScale;
-export let tableMargin = 42 * gameScale;
+export let tableMargin = 200 * gameScale;
 export let sidePocketLiningAngle;
 
 export let pockets = [];
@@ -64,9 +65,15 @@ function setupPocketLinings() {
 }
 
 export function drawTable() {
-  background(60, 120, 20);
+  background(120, 120, 120);
 
-  if (!tableHitBox) { }
+  if (!tableHitBox) {
+    push();
+    noStroke();
+    texture(tableExp);
+    plane(tableWidth, tableHeight);
+    pop();
+  }
 
   if (tableHitBox) {
     push();
