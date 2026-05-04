@@ -1,7 +1,7 @@
 import { setupTable } from "./table.js";
 import { setupBalls, drawBalls } from "./balls.js";
 import { drawPhysics } from "./physics.js";
-import { drawCue, mousePressedCue } from "./cue.js";
+import { drawCue, mousePressedCue, mouseReleasedCue } from "./cue.js";
 
 export function setupGame() {
   setupTable();
@@ -18,4 +18,9 @@ export function drawGame() {
 
 export function mousePressedGame() {
   mousePressedCue();
+}
+
+//NY
+export function mouseReleasedGame() {
+  mouseReleasedCue();
 }
