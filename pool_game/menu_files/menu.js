@@ -1,4 +1,5 @@
-import { setState } from "../global_variables.js";
+import { setState, font } from "../global_variables.js";
+import { setupGame } from "../game_files/game.js"; 
 import { drawSettings, mousePressedSettings } from "./settings.js";
 import { poolTable } from "../assets/configuration.js";
 import { tableWidth, tableHeight } from "../game_files/table.js";
@@ -13,6 +14,7 @@ export function drawMenu() {
   texture(poolTable);
   plane(tableWidth, tableHeight);
   ortho();
+  textFont(font);
   fill(255);
   textSize(32);
   textAlign(CENTER, CENTER);
@@ -32,6 +34,7 @@ export function mousePressedMenu() {
   let bx = mouseX - width / 2;
   let by = mouseY - height / 2;
   if (bx > -80 && bx < 80 && by > -5 && by < 45) {
+    setupGame();
     setState("game");
   }
 }
