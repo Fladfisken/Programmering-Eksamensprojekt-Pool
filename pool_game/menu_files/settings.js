@@ -24,27 +24,30 @@ export function drawSettings() {
     pop();
   }
 
-  // NEW: draw overlay if in settings state
+  // hvis man åbner settings bliver det tegnet oven på poolbordet
   if (getState() === "settings") {
     push();
     ortho();
-    // dark transparent background
+    // mørk gennemsigtig baggrund
     fill(0, 0, 0, 150);
     noStroke();
     rectMode(CORNER);
     rect(-width / 2, -height / 2, width, height);
-    // settings box
+
+    // settings knap
     fill(50);
     rectMode(CENTER);
     rect(0, 0, boxW, boxH, 10);
-    // continue button
+
+    // continue knap
     fill(0, 180, 0);
     rect(0, -30, 160, 40, 6);
     fill(255);
     textSize(18);
     textAlign(CENTER, CENTER);
     text("Continue", 0, -30);
-    // menu button
+
+    // menu knap
     fill(180, 0, 0);
     rect(0, 30, 160, 40, 6);
     fill(255);
@@ -57,7 +60,7 @@ export function mousePressedSettings() {
   let mx = mouseX - width / 2;
   let my = mouseY - height / 2;
 
-  // NEW: check if settings button is clicked during game
+  // check om der bliver trykket "settings" undervejs i spillet
   if (getState() === "game") {
     if (mx > width / 2 - 90 && mx < width / 2 - 10 && my > -height / 2 + 10 && my < -height / 2 + 40) {
       setState("settings");
@@ -66,19 +69,19 @@ export function mousePressedSettings() {
   }
 
   if (getState() === "settings") {
-    // check if outside the box — close settings
+    // Hvis man trykker uden for settings kommer man tilbage til game
     if (mx < boxX || mx > boxX + boxW || my < boxY || my > boxY + boxH) {
       setState("game");
       return;
     }
-    // continue button
+    // continue knap
     if (mx > -80 && mx < 80 && my > -50 && my < -10) {
       setState("game");
       return;
     }
-    // back to menu button
+    // "back to menu" knap
     if (mx > -80 && mx < 80 && my > 10 && my < 50) {
-      setupBalls(); // reset balls
+      setupBalls(); // nulstil boldene
       setState("menu");
       return;
     }

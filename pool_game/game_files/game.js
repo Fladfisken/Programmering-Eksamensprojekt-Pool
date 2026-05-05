@@ -1,6 +1,6 @@
 import { setupTable, drawTable } from "./table.js";
 import { setupBalls, drawBalls, balls } from "./balls.js";
-import { drawPhysics } from "./physics.js";
+import { drawPhysics, allStopped } from "./physics.js";
 import { drawCue, mousePressedCue, mouseReleasedCue, mouseMovedCue } from "./cue.js";
 import { setState } from "../global_variables.js";
 
@@ -9,6 +9,7 @@ export function setupGame() {
   setupBalls();
 }
 
+// tegn spillet
 export function drawGame() {
   drawTable();
   drawPhysics();
@@ -17,13 +18,22 @@ export function drawGame() {
   checkPockets();
 }
 
-// if white ball pocketed switch to placing mode, if 8 ball pocketed go to end
 function checkPockets() {
-  if (balls[0].pocket) {
+  if (balls[0].pocket) { // hvis hvid bold bliver skudt i hullet skal den placeres
     setState("placing");
   }
-  if (balls[8].pocket) {
-    setState("end");
+  if (balls[8].pocket && allStopped) {
+    // check om alle andre kugler er hullerne
+    let allOtherPocketed = true;
+    for (let i = 1; i < balls.length; i++) {
+      if (i === 8) continue; // spring over 8-ball
+      if (!balls[i].pocket) {
+        allOtherPocketed = false;
+        break;
+      }
+    }
+    // win eller lose tilstand
+    setState(allOtherPocketed ? "win" : "lose");
   }
 }
 

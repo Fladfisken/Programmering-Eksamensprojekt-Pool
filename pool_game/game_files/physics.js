@@ -1,15 +1,15 @@
 import { balls, ballRadius } from "./balls.js";
 import { pockets, cushions, pocketLinings, pocketDiameter } from "./table.js";
 
-export let wallFric = 0.8;
-export let feltFric = 0.99;
-export let restitution = 0.95;
-export let ballFric = 0.95;
-export let allStopped = true;
+export let wallFric = 0.8;      // friktion når bolde rammer kanten
+export let feltFric = 0.99;     // friktion når de ruller
+export let restitution = 0.95;  // friktion ved kollision
+export let allStopped = true;   // ligger alle bolde stille
 
 export function drawPhysics() {
   allStopped = true;
 
+  // har alle bolde en hastighed under 0.05
   for (let b of balls) {
     if (b.vel.mag() > 0.05) {
       allStopped = false;
@@ -17,11 +17,13 @@ export function drawPhysics() {
     }
   }
 
+  // kører funktionerne for alle kugler
   for (let b of balls) {
     wallCollision(b);
     pocketDetection(b);
   }
 
+  // bolde kollidere
   for (let i = 0; i < balls.length; i++) {
     for (let j = i + 1; j < balls.length; j++) {
       touchingBalls(balls[i], balls[j]);
@@ -29,8 +31,9 @@ export function drawPhysics() {
   }
 }
 
+
 function segmentCollision(ball, seg) {
-  let bx = ball.pos.x - width / 2;  // ← add these two lines
+  let bx = ball.pos.x - width / 2;
   let by = ball.pos.y - height / 2;
 
   let x1 = seg[0], y1 = seg[1];
@@ -41,13 +44,13 @@ function segmentCollision(ball, seg) {
   let lenSq = dx * dx + dy * dy;
   if (lenSq === 0) return;
 
-  let t = ((bx - x1) * dx + (by - y1) * dy) / lenSq;  // ← bx/by
+  let t = ((bx - x1) * dx + (by - y1) * dy) / lenSq;
   t = constrain(t, 0, 1);
 
   let closestX = x1 + t * dx;
   let closestY = y1 + t * dy;
 
-  let distX = bx - closestX;  // ← bx/by
+  let distX = bx - closestX;
   let distY = by - closestY;
   let dist = sqrt(distX * distX + distY * distY);
 
@@ -62,7 +65,7 @@ function segmentCollision(ball, seg) {
       ball.vel.mult(wallFric);
     }
 
-    // Write back in screen space ← unchanged
+    
     let overlap = ballRadius - dist;
     ball.pos.x += nx * overlap;
     ball.pos.y += ny * overlap;
@@ -83,11 +86,11 @@ function wallCollision(ball) {
 function pocketDetection(ball) {
   if (ball.pocket) return;
 
-  let bx = ball.pos.x - width / 2;  // ← add these two lines
+  let bx = ball.pos.x - width / 2;
   let by = ball.pos.y - height / 2;
 
   for (let p of pockets) {
-    let dx = bx - p[0];  // ← bx/by
+    let dx = bx - p[0]; 
     let dy = by - p[1];
     let dist = sqrt(dx * dx + dy * dy);
 
@@ -98,6 +101,8 @@ function pocketDetection(ball) {
   }
 }
 
+// FISIKS
+// hvis to bolde begge er på bordet og rører hinanden kolliderer de
 function touchingBalls(ball1, ball2) {
   if (ball1.pocket || ball2.pocket) return;
 
