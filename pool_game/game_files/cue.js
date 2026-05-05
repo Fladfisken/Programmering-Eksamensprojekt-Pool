@@ -9,8 +9,8 @@ let isDragging = false;
 let savedAimAngle = 0;
 let savedMouseAngle = 0;
 let dragDistance = 0;             // Længde køen er trukket tilbage
-let maxDrag = 80 * gameScale;     // Længde man kan trække køen tilbage
-let cueLength = 150 * gameScale;
+let maxDrag = 100 * gameScale;     // Længde man kan trække køen tilbage
+let cueLength = 576 * gameScale;
 let dragStartPos = null;
 
 function getPositions() {
@@ -48,7 +48,7 @@ function isValidPlacement(x, y) {
     let dx = (x + width / 2) - balls[i].pos.x;
     let dy = (y + height / 2) - balls[i].pos.y;
     let dist = sqrt(dx * dx + dy * dy);
-    if (dist < ballRadius * 2) return false; // hvis der er overlap må an ikke placere kuglen
+    if (dist < ballRadius * 2 || !allStopped) return false; // hvis der er overlap må an ikke placere kuglen
   }
   return true;
 }
@@ -147,7 +147,7 @@ export function mousePressedCue() {
 export function mouseReleasedCue() {
   if (isDragging && dragDistance > 0) {
     let power = dragDistance / maxDrag;
-    let maxForce = 18 * gameScale;
+    let maxForce = 30 * gameScale;
     let force = power * maxForce;
     balls[0].vel.x += force * cos(aimAngle);
     balls[0].vel.y += force * sin(aimAngle);

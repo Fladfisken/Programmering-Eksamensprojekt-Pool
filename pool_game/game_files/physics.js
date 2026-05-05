@@ -1,15 +1,19 @@
 import { balls, ballRadius } from "./balls.js";
-import { pockets, cushions, pocketLinings, pocketDiameter } from "./table.js";
+import { pockets, cushions, pocketLinings, pocketDiameter, tableWidth, tableHeight } from "./table.js";
 
 export let wallFric = 0.8;      // friktion når bolde rammer kanten
 export let feltFric = 0.99;     // friktion når de ruller
 export let restitution = 0.95;  // friktion ved kollision
 export let allStopped = true;   // ligger alle bolde stille
 
-export function drawPhysics() {
-  allStopped = true;
+const SUBSTEPS = 4;
 
-  // har alle bolde en hastighed under 0.05
+export function drawPhysics() {
+  // normalisere til 60 FPS
+  let dt = constrain(deltaTime / (1000 / 60), 0, 3);
+  let subDt = dt / SUBSTEPS;
+
+  allStopped = true;
   for (let b of balls) {
     if (b.vel.mag() > 0.05) {
       allStopped = false;
@@ -17,16 +21,22 @@ export function drawPhysics() {
     }
   }
 
-  // kører funktionerne for alle kugler
-  for (let b of balls) {
-    wallCollision(b);
-    pocketDetection(b);
-  }
-
-  // bolde kollidere
-  for (let i = 0; i < balls.length; i++) {
-    for (let j = i + 1; j < balls.length; j++) {
-      touchingBalls(balls[i], balls[j]);
+  for (let step = 0; step < SUBSTEPS; step++) {
+    // bevæger først kuglen
+    for (let b of balls) {
+      b.move(subDt);
+    }
+    // så checks kolision
+    for (let b of balls) {
+      wallCollision(b);
+      pocketDetection(b);
+      // sikring, skulle en bold på magisk vis ryge udenfor bordet
+      clampBall(b);
+    }
+    for (let i = 0; i < balls.length; i++) {
+      for (let j = i + 1; j < balls.length; j++) {
+        touchingBalls(balls[i], balls[j]);
+      }
     }
   }
 }
@@ -65,7 +75,7 @@ function segmentCollision(ball, seg) {
       ball.vel.mult(wallFric);
     }
 
-    
+
     let overlap = ballRadius - dist;
     ball.pos.x += nx * overlap;
     ball.pos.y += ny * overlap;
@@ -90,7 +100,7 @@ function pocketDetection(ball) {
   let by = ball.pos.y - height / 2;
 
   for (let p of pockets) {
-    let dx = bx - p[0]; 
+    let dx = bx - p[0];
     let dy = by - p[1];
     let dist = sqrt(dx * dx + dy * dy);
 
@@ -98,6 +108,30 @@ function pocketDetection(ball) {
       ball.pocket = true;
       ball.vel.set(0, 0);
     }
+  }
+}
+
+function clampBall(ball) {
+  if (ball.pocket) return;
+
+  let bx = ball.pos.x - width / 2;
+  let by = ball.pos.y - height / 2;
+
+  if (bx < -tableWidth / 2 + ballRadius) {
+    ball.pos.x = width / 2 + (-tableWidth / 2 + ballRadius);
+    ball.vel.x = abs(ball.vel.x);
+  }
+  if (bx > tableWidth / 2 - ballRadius) {
+    ball.pos.x = width / 2 + (tableWidth / 2 - ballRadius);
+    ball.vel.x = -abs(ball.vel.x);
+  }
+  if (by < -tableHeight / 2 + ballRadius) {
+    ball.pos.y = height / 2 + (-tableHeight / 2 + ballRadius);
+    ball.vel.y = abs(ball.vel.y);
+  }
+  if (by > tableHeight / 2 - ballRadius) {
+    ball.pos.y = height / 2 + (tableHeight / 2 - ballRadius);
+    ball.vel.y = -abs(ball.vel.y);
   }
 }
 
