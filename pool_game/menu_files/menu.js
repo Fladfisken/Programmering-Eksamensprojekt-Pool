@@ -3,6 +3,7 @@ import { drawSettings, mousePressedSettings } from "./settings.js";
 
 export function setupMenu() { }
 
+// tegn menu
 export function drawMenu() {
   background(30);
   push();
@@ -21,6 +22,7 @@ export function drawMenu() {
   pop();
 }
 
+// hvis man trykker play ændres tilstand til "game"
 export function mousePressedMenu() {
   let bx = mouseX - width / 2;
   let by = mouseY - height / 2;

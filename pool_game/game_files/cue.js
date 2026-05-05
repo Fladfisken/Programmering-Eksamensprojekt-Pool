@@ -5,17 +5,14 @@ import { allStopped } from "./physics.js";
 let aimLength = 200 * gameScale;
 let aimAngle = 0;
 let isAiming = false;
-let isDragging = false;
+let isDragging = false; 
 let savedAimAngle = 0;
 let savedMouseAngle = 0;
-let dragDistance = 0;
-let maxDrag = 80 * gameScale;
+let dragDistance = 0;             // Længde køen er trukket tilbage
+let maxDrag = 80 * gameScale;     // Længde man kan trække køen tilbage
 let cueLength = 150 * gameScale;
 let dragStartPos = null;
 
-//let placePos = { x: width / 4, y: height / 2 };
-
-//avoid repeating these calculations
 function getPositions() {
   return {
     bx: balls[0].pos.x - width / 2,
@@ -26,36 +23,37 @@ function getPositions() {
 }
 
 function mouseIsNearCue(bx, by, mx, my) {
-  // vector from ball to mouse
+  // vektor fra kugle til musen
   let dx = mx - bx;
   let dy = my - by;
 
-  // cue direction is opposite to aim
+  // poolkøens retning er modsat af hvad man sigter
   let cueDirX = -cos(aimAngle);
   let cueDirY = -sin(aimAngle);
 
-  // dot product tells if mouse is behind the ball
+  // Fortæller om musen er bagved kuglen
   let dot = dx * cueDirX + dy * cueDirY;
-  if (dot < 0) return false; // mouse is in front of ball, not behind
+  if (dot < 0) return false; // mus er foran kuglen, ikke bagved
 
-  // point-to-line distance from mouse to cue line
+  // punkt-til-linje distance fra mus til kø
   let dist = abs(dx * sin(aimAngle) - dy * cos(aimAngle));
 
   return dist < 20 * gameScale;
 }
 
-// check if placement position overlaps any other ball
+// checker om man placerer den hvide kugle oven i en anden
 function isValidPlacement(x, y) {
   for (let i = 1; i < balls.length; i++) {
     if (balls[i].pocket) continue;
     let dx = (x + width / 2) - balls[i].pos.x;
     let dy = (y + height / 2) - balls[i].pos.y;
     let dist = sqrt(dx * dx + dy * dy);
-    if (dist < ballRadius * 2) return false;
+    if (dist < ballRadius * 2) return false; // hvis der er overlap må an ikke placere kuglen
   }
   return true;
 }
 
+// tegner poolkøen
 export function drawCue() {
   let { bx, by, mx, my } = getPositions();
 
@@ -63,7 +61,7 @@ export function drawCue() {
     push();
     ortho();
     let valid = isValidPlacement(mx, my);
-    stroke(valid ? color(0, 255, 0) : color(255, 0, 0));
+    stroke(valid ? color(0, 255, 0) : color(255, 0, 0)); // rød eller grøn afhængig af om placering er valid
     strokeWeight(2);
     noFill();
     circle(mx, my, ballRadius * 2);
@@ -73,29 +71,31 @@ export function drawCue() {
     textAlign(LEFT, TOP);
     text("Click to place cue ball", -width / 2 + 10, -height / 2 + 10);
     pop();
-    return; // skip normal cue drawing
+    return;
   }
 
+  // Sigtelinjen følger ikke musen, men roterer med den (man trækker sigtelinjen)
   if (isAiming) {
     let currentMouseAngle = atan2(my - by, mx - bx);
     aimAngle = savedAimAngle + (currentMouseAngle - savedMouseAngle);
   }
 
-  //update drag distance when dragging
+  // opdaterer drag-distance når isDragging == true
   if (isDragging) {
     let dx = mx - dragStartPos.x;
     let dy = my - dragStartPos.y;
-    // project mouse movement onto cue direction (behind ball)
+    // projekterer musens ændring på køens retning
     let cueDirX = -cos(aimAngle);
     let cueDirY = -sin(aimAngle);
     let projected = dx * cueDirX + dy * cueDirY;
     dragDistance = constrain(projected, 0, maxDrag);
   }
 
-  // draw cue stick offset by drag distance
+  // tegner køen rykket aftstanden den trækkes tilbage
   let cueStartX = bx - (10 + dragDistance) * cos(aimAngle);
   let cueStartY = by - (10 + dragDistance) * sin(aimAngle);
   
+  //Hvis boldene ligger stille skal sigtelinje og kø tegnes
   if(allStopped){
     stroke(255);
     strokeWeight(1);
@@ -108,8 +108,6 @@ export function drawCue() {
     cueStartY - cueLength * sin(aimAngle));
 
   }
-
-  let power = round((dragDistance / maxDrag) * 100);
   
 }
 
@@ -129,7 +127,7 @@ export function mousePressedCue() {
     return;
   }
 
-  // check if mouse is near cue to decide mode
+  // cheker om musen er tæt på køen for at afgøre tilstand - sigte eller skyde med kø
   if(allStopped){
     if (mouseIsNearCue(bx, by, mx, my)) {
       isDragging = true;
@@ -145,6 +143,7 @@ export function mousePressedCue() {
   }
 }
 
+// når musen slippes lægges force til kuglens hastighed
 export function mouseReleasedCue() {
   if (isDragging && dragDistance > 0) {
     let power = dragDistance / maxDrag;

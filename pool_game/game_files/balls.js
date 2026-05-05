@@ -13,10 +13,13 @@ export let ballRadius = 9 * gameScale;
 export let ballDiameter = 2 * ballRadius;
 export let balls = [];
 
+// Liste over alle bolde i spillet
 let ballTextures = [];
 
 export function setupBalls() {
   balls.length = 0; // Undgår bolde ikke slettes efter et spil
+
+  // Sætter teksturer op i rækkefølge svarende til bold-numre
   ballTextures = [
     cueBall, yellowFull, blueFull, redFull,
     purpleFull, orangeFull, greenFull, maroonFull,
@@ -24,17 +27,20 @@ export function setupBalls() {
     purpleStripe, orangeStripe, greenStripe, maroonStripe
   ];
 
+    // Trekants-gitter forhold bruges til at placere bolde i trekant-formation
   let triangleLatticeRelation = sqrt(3) / 2;
   let ballRows = 5;
-
   let ballPositions = [];
 
+  // Midtpunkt af bordet
   let ox = width / 2;
   let oy = height / 2;
 
+  // Startposition for trekant-formationen
   let ballx0 = ox + playWidth / 4
   let bally0 = oy;
 
+  // Beregner position for hver bold i trekant-formationen
   for (let ballRow = 0; ballRow < ballRows; ballRow++) {
     let ballx = ballx0 + ballRow * ballDiameter * triangleLatticeRelation;
 
@@ -44,16 +50,18 @@ export function setupBalls() {
     }
   }
 
-  let cueBallx = ox - playWidth / 4; // roughly quarter way from left cushion
+  // Placerer hvid bold en kvart bane fra venstre
+  let cueBallx = ox - playWidth / 4;
   let cueBally = oy;
-
   balls.push(new Ball(cueBallx, cueBally, 0, 0, 0));
 
+  // Tilføjer resten af boldene i trekant-formationen
   for (let i = 0; i < ballPositions.length; i++) {
     balls.push(new Ball(ballPositions[i].ballx, ballPositions[i].bally, 0, 0, i + 1));
   }
 }
 
+// Opdaterer og tegner alle bolde hver frame
 export function drawBalls() {
   for (let b of balls) {
     b.move();
@@ -63,30 +71,37 @@ export function drawBalls() {
 
 export class Ball {
   constructor(ballx, bally, vx, vy, texture) {
-    this.pos = createVector(ballx, bally);
-    this.vel = createVector(vx, vy);
-    this.angle = 0;
-    this.axis = createVector(0, 1, 0);
-    this.pocket = false;
-    this.texture = ballTextures[texture];
+    this.pos = createVector(ballx, bally);  // position
+    this.vel = createVector(vx, vy);        // hastighed
+    this.angle = 0;                         // rotationsvinkel
+    this.axis = createVector(0, 1, 0);      // rotationsakse
+    this.pocket = false;                    // om bolden er i et hul
+    this.texture = ballTextures[texture];   // bold-tekstur
   }
 
   move() {
     if (this.pocket) return;
     let speed = this.vel.mag();
+
+    // Opdaterer rotation baseret på hastighed og retning
     if (speed > 0.05) {
       this.angle += speed / ballRadius;
       this.axis = createVector(-this.vel.y, this.vel.x, 0).normalize();
     }
+
+    // Flytter bolden og bremser den med bordfriktionen
     this.pos.add(this.vel);
     this.vel.mult(feltFric);
 
+    // Stopper bolden hvis den er næsten stille
     if (speed < 0.05) { this.vel.set(0, 0); }
   }
 
   show() {
+    // Tegner ikke bolden hvis den er i et hul
     if (this.pocket) return;
 
+    // Tegner bold med 3D tekstur
     if (!ballHitBox) {
       push();
       translate(this.pos.x - width / 2, this.pos.y - height / 2, 0);
@@ -97,6 +112,7 @@ export class Ball {
       pop();
     }
 
+    // Tegner kun hitbox (til debug)
     if (ballHitBox) {
       push();
       translate(this.pos.x - width / 2, this.pos.y - height / 2, 0);
