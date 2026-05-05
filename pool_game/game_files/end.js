@@ -1,4 +1,4 @@
-import { setState, getState } from "../global_variables.js";
+import { setState, getState, font } from "../global_variables.js";
 import { setupBalls } from "./balls.js";
 
 export function setupEnd() { }
@@ -9,6 +9,7 @@ export function drawEnd() {
   push();
   ortho();
   rectMode(CENTER);
+  textFont(font);
   noStroke();
   fill(255);
   textSize(32);

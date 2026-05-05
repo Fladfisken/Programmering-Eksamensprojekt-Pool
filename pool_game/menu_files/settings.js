@@ -1,4 +1,4 @@
-import { setState, getState, obamium, setObamium } from "../global_variables.js";
+import { setState, getState, obamium, setObamium, font } from "../global_variables.js";
 import { setupBalls } from "../game_files/balls.js";
 
 // button/box dimensions for hit testing
@@ -47,6 +47,7 @@ export function drawSettings() {
     secretInput.hide();
     push();
     ortho();
+    textFont(font);
     fill(180);
     rectMode(CORNER);
     rect(width / 2 - 90, -height / 2 + 10, 80, 30, 6);
@@ -74,6 +75,7 @@ export function drawSettings() {
     fill(50);
     rectMode(CENTER);
     rect(0, 0, boxW, boxH, 10);
+    textFont(font);
 
     // continue knap
     fill(0, 180, 0);

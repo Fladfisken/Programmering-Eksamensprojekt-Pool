@@ -9,7 +9,7 @@ let isDragging = false;
 let savedAimAngle = 0;
 let savedMouseAngle = 0;
 let dragDistance = 0;             // Længde køen er trukket tilbage
-let maxDrag = 100 * gameScale;     // Længde man kan trække køen tilbage
+let maxDrag = 100 * gameScale;    // Længde man kan trække køen tilbage
 let cueLength = 576 * gameScale;
 let dragStartPos = null;
 
@@ -160,3 +160,7 @@ export function mouseReleasedCue() {
 }
 
 export function mouseMovedCue() { }
+
+export function setupCue() {
+  aimAngle = random(-0.01, 0.01);
+}

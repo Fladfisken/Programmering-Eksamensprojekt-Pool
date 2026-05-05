@@ -9,6 +9,10 @@ export let gameScale = 1;
 export let obamium = false;
 export function setObamium(val) { obamium = val; }
  
+// Font til tekst
+export let font;
+export function setFont(f) { font = f; }
+
 let _state = "menu";
 export function getState() { return _state; }
 export function setState(newState) { _state = newState; }
