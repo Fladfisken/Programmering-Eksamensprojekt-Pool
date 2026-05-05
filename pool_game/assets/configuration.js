@@ -15,6 +15,7 @@ export let orangeStripe;
 export let greenStripe;
 export let maroonStripe;
 export let poolTable;
+export let obama;
 
 export function preloadAssets() {
   cueBall = loadImage('assets/0CueBall.png');
@@ -34,4 +35,5 @@ export function preloadAssets() {
   greenStripe = loadImage('assets/14GreenStripe.png');
   maroonStripe = loadImage('assets/15MaroonStripe.png');
   poolTable = loadImage('assets/poolTable.png')
+  obama = loadImage('assets/Obama.png')
 }

@@ -1,5 +1,6 @@
 import { gameScale, tableHitBox } from "../global_variables.js";
-import { poolTable } from "../assets/configuration.js";
+import { obamium } from "../global_variables.js";
+import { poolTable, obama } from "../assets/configuration.js";
 
 export let tableWidth = 816 * gameScale;
 export let tableHeight = 464 * gameScale;
@@ -70,7 +71,7 @@ export function drawTable() {
   if (!tableHitBox) {
     push();
     noStroke();
-    texture(poolTable);
+    texture(obamium ? obama : poolTable); // brug obama tekstur i obamium mode
     plane(tableWidth, tableHeight);
     pop();
   }
