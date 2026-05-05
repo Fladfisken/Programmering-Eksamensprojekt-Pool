@@ -1,12 +1,14 @@
 import { gameScale } from "../global_variables.js";
 import { ballHitBox } from "../global_variables.js";
+import { obamium } from "../global_variables.js";
 import { playWidth, playHeight } from "./table.js";
 import { wallFric, feltFric } from "./physics.js";
 import {
   cueBall, yellowFull, blueFull, redFull,
   purpleFull, orangeFull, greenFull, maroonFull,
   eightBall, yellowStripe, blueStripe, redStripe,
-  purpleStripe, orangeStripe, greenStripe, maroonStripe
+  purpleStripe, orangeStripe, greenStripe, maroonStripe,
+  obama
 } from "../assets/configuration.js";
 
 export let ballRadius = 9 * gameScale;
@@ -108,7 +110,7 @@ export class Ball {
       push();
       translate(this.pos.x - width / 2, this.pos.y - height / 2, 0);
       rotate(this.angle, this.axis);
-      texture(this.texture);
+      texture(obamium ? obama : this.texture); // brug obama tekstur i obamium mode
       noStroke();
       sphere(ballRadius);
       pop();

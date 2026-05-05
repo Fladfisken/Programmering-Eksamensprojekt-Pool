@@ -3,10 +3,10 @@ import { setupMenu, drawMenu, mousePressedMenu } from "./menu_files/menu.js";
 import { setupEnd, drawEnd, mousePressedEnd } from "./game_files/end.js";
 import { preloadAssets } from "./assets/configuration.js";
 import { getState, setFont } from "./global_variables.js";
-import { drawSettings, mousePressedSettings } from "./menu_files/settings.js";
-
+import { drawSettings, mousePressedSettings, setupSettings } from "./menu_files/settings.js";
 
 let font;
+
 window.preload = function () {
   preloadAssets();
   loadFont("https://cdnjs.cloudflare.com/ajax/libs/topcoat/0.8.0/font/SourceCodePro-Regular.otf", f => setFont(f));
@@ -15,15 +15,17 @@ window.preload = function () {
 window.setup = function () {
   setupGame();
   setupMenu();
+  setupSettings();
+  textFont(font);
   //textFont(font);
 };
 
 window.draw = function () {
-  if (getState() === "menu") drawMenu();
+  if (getState() === "menu") { drawMenu(); drawSettings(); }
   else if (getState() === "game") { drawGame(); drawSettings(); } // overlay on game
-  else if (getState() === "placing") drawGame();
+  else if (getState() === "placing") { drawGame(); drawSettings(); }
   else if (getState() === "settings") { drawGame(); drawSettings(); } // game underneath
-  else if (getState() === "win" || getState() === "lose") drawEnd();
+  else if (getState() === "win" || getState() === "lose") { drawEnd(); drawSettings(); }
 };
 
 window.mousePressed = function () {
