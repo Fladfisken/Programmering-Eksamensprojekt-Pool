@@ -1,5 +1,7 @@
 import { setState } from "../global_variables.js";
 import { drawSettings, mousePressedSettings } from "./settings.js";
+import { poolTable } from "../assets/configuration.js";
+import { tableWidth, tableHeight } from "../game_files/table.js";
 
 export function setupMenu() { }
 
@@ -7,6 +9,9 @@ export function setupMenu() { }
 export function drawMenu() {
   background(30);
   push();
+  noStroke();
+  texture(poolTable);
+  plane(tableWidth, tableHeight);
   ortho();
   fill(255);
   textSize(32);

@@ -22,18 +22,33 @@ function checkPockets() {
   if (balls[0].pocket) { // hvis hvid bold bliver skudt i hullet skal den placeres
     setState("placing");
   }
+
   if (balls[8].pocket && allStopped) {
-    // check om alle andre kugler er hullerne
-    let allOtherPocketed = true;
+    // check om alle andre kugler er hullerne (fulde og stribede)
+    let allSolidsPocketed = true;
+    let allStripesPocketed = true;
+
     for (let i = 1; i < balls.length; i++) {
-      if (i === 8) continue; // spring over 8-ball
-      if (!balls[i].pocket) {
-        allOtherPocketed = false;
-        break;
+      if (i === 8) continue;
+
+      // fulde bolde
+      if (i >= 1 && i <= 7) {
+        if (!balls[i].pocket) {
+          allSolidsPocketed = false;
+        }
+      }
+
+      // stribede bolde
+      if (i >= 9 && i <= 15) {
+        if (!balls[i].pocket) {
+          allStripesPocketed = false;
+        }
       }
     }
+
     // win eller lose tilstand
-    setState(allOtherPocketed ? "win" : "lose");
+    const validWin = allSolidsPocketed || allStripesPocketed;
+    setState(validWin ? "win" : "lose");
   }
 }
 
@@ -46,5 +61,5 @@ export function mouseReleasedGame() {
 }
 
 export function mouseMovedGame() {
-  mouseMovedCue(); 
+  mouseMovedCue();
 }

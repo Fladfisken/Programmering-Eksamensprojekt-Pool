@@ -27,12 +27,17 @@ export function setupBalls() {
     purpleStripe, orangeStripe, greenStripe, maroonStripe
   ];
 
-    // Trekants-gitter forhold bruges til at placere bolde i trekant-formation
+  // Trekantsgitter forhold bruges til at placere bolde i trekant-formation
   let triangleLatticeRelation = sqrt(3) / 2;
   let ballRows = 5;
   let ballPositions = [];
 
-  // Midtpunkt af bordet
+  /* Midtpunkt af bordet. Disse skal defineres, eftersom WEBGL bruges.
+  WEBGL flytter origo af koordinatsystemet til centrum af hele canvas.
+  Normalt ligger origo i det øverste venstre hjørne. 
+  Nogle ting beregnes med WEBGL og uden WEBGL. 
+  Derfor kræves et offset for de beregninger, der laves uden WEBGL, 
+  inden der bruges/renders med WEBGL */
   let ox = width / 2;
   let oy = height / 2;
 
@@ -64,7 +69,6 @@ export function setupBalls() {
 // Opdaterer og tegner alle bolde hver frame
 export function drawBalls() {
   for (let b of balls) {
-    b.move();
     b.show();
   }
 }
@@ -79,21 +83,19 @@ export class Ball {
     this.texture = ballTextures[texture];   // bold-tekstur
   }
 
-  move() {
+  move(dt) {
     if (this.pocket) return;
     let speed = this.vel.mag();
 
-    // Opdaterer rotation baseret på hastighed og retning
     if (speed > 0.05) {
-      this.angle += speed / ballRadius;
+      this.angle += speed * dt / ballRadius;
       this.axis = createVector(-this.vel.y, this.vel.x, 0).normalize();
     }
 
-    // Flytter bolden og bremser den med bordfriktionen
-    this.pos.add(this.vel);
-    this.vel.mult(feltFric);
+    this.pos.x += this.vel.x * dt;
+    this.pos.y += this.vel.y * dt;
+    this.vel.mult(pow(feltFric, dt));
 
-    // Stopper bolden hvis den er næsten stille
     if (speed < 0.05) { this.vel.set(0, 0); }
   }
 
