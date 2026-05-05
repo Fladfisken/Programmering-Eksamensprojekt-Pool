@@ -1,3 +1,4 @@
+// Export teksturvariabler til boldene og bordet
 export let cueBall;
 export let yellowFull;
 export let blueFull;
@@ -17,6 +18,7 @@ export let maroonStripe;
 export let poolTable;
 export let obama;
 
+// Indlæser alle billeder. Kaldes i preload, så de er klar inden setup
 export function preloadAssets() {
   cueBall = loadImage('assets/0CueBall.png');
   yellowFull = loadImage('assets/1YellowFull.png');

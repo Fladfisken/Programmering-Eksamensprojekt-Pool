@@ -1,6 +1,4 @@
-import { gameScale } from "../global_variables.js";
-import { ballHitBox } from "../global_variables.js";
-import { obamium } from "../global_variables.js";
+import { gameScale, ballHitBox, obamium } from "../global_variables.js";
 import { playWidth, playHeight } from "./table.js";
 import { wallFric, feltFric } from "./physics.js";
 import {
@@ -13,9 +11,9 @@ import {
 
 export let ballRadius = 9 * gameScale;
 export let ballDiameter = 2 * ballRadius;
+// Liste over all bolde
 export let balls = [];
-
-// Liste over alle bolde i spillet
+// Liste over alle boldeteksturer i spillet
 let ballTextures = [];
 
 export function setupBalls() {
@@ -43,7 +41,7 @@ export function setupBalls() {
   let ox = width / 2;
   let oy = height / 2;
 
-  // Startposition for trekant-formationen
+  // Startposition for trekant-formationen en kvart bane fra højre kant
   let ballx0 = ox + playWidth / 4
   let bally0 = oy;
 
@@ -57,7 +55,7 @@ export function setupBalls() {
     }
   }
 
-  // Placerer hvid bold en kvart bane fra venstre
+  // Placerer hvid bold en kvart bane fra venstre kant
   let cueBallx = ox - playWidth / 4;
   let cueBally = oy;
   balls.push(new Ball(cueBallx, cueBally, 0, 0, 0));
@@ -77,18 +75,19 @@ export function drawBalls() {
 
 export class Ball {
   constructor(ballx, bally, vx, vy, texture) {
-    this.pos = createVector(ballx, bally);  // position
-    this.vel = createVector(vx, vy);        // hastighed
-    this.angle = 0;                         // rotationsvinkel
-    this.axis = createVector(0, 1, 0);      // rotationsakse
-    this.pocket = false;                    // om bolden er i et hul
-    this.texture = ballTextures[texture];   // bold-tekstur
+    this.pos = createVector(ballx, bally);  // Position
+    this.vel = createVector(vx, vy);        // Hastighed
+    this.angle = 0;                         // Rotationsvinkel
+    this.axis = createVector(0, 1, 0);      // Rotationsakse
+    this.pocket = false;                    // Om bolden er i et hul
+    this.texture = ballTextures[texture];   // Bold-tekstur
   }
 
   move(dt) {
     if (this.pocket) return;
     let speed = this.vel.mag();
 
+    // Opdaterer rotationsvinkel og -akse baseret på bevægelsesretning
     if (speed > 0.05) {
       this.angle += speed * dt / ballRadius;
       this.axis = createVector(-this.vel.y, this.vel.x, 0).normalize();
@@ -96,13 +95,13 @@ export class Ball {
 
     this.pos.x += this.vel.x * dt;
     this.pos.y += this.vel.y * dt;
-    this.vel.mult(pow(feltFric, dt));
+    this.vel.mult(pow(feltFric, dt)); // Anvender rullefriktion hver frame
 
-    if (speed < 0.05) { this.vel.set(0, 0); }
+    if (speed < 0.05) { this.vel.set(0, 0); } // Stopper bolden ved meget lav hastighed (vi gider ikke at vente på bolden stopper efter uendelig tid)
   }
 
   show() {
-    // Tegner ikke bolden hvis den er i et hul
+    // Tegner ikke bolden på banen hvis den er i et hul
     if (this.pocket) return;
 
     // Tegner bold med 3D tekstur
@@ -110,7 +109,7 @@ export class Ball {
       push();
       translate(this.pos.x - width / 2, this.pos.y - height / 2, 0);
       rotate(this.angle, this.axis);
-      texture(obamium ? obama : this.texture); // brug obama tekstur i obamium mode
+      texture(obamium ? obama : this.texture); // Brug obama tekstur i obamium mode
       noStroke();
       sphere(ballRadius);
       pop();

@@ -4,13 +4,12 @@ import { drawSettings, mousePressedSettings } from "./settings.js";
 import { poolTable } from "../assets/configuration.js";
 import { tableWidth, tableHeight } from "../game_files/table.js";
 
-export function setupMenu() { }
-
-// tegn menu
+// Tegn menu
 export function drawMenu() {
   background(30);
   push();
   noStroke();
+  // Viser bordteksturen som baggrund
   texture(poolTable);
   plane(tableWidth, tableHeight);
   ortho();
@@ -20,6 +19,7 @@ export function drawMenu() {
   textAlign(CENTER, CENTER);
   noStroke();
   text("POOL", 0, -50);
+  // Tegner "Play" knap
   fill(0, 180, 0);
   rectMode(CENTER);
   rect(0, 20, 160, 50, 8);
@@ -29,12 +29,12 @@ export function drawMenu() {
   pop();
 }
 
-// hvis man trykker play ændres tilstand til "game"
+// Hvis man trykker play ændres tilstand til "game"
 export function mousePressedMenu() {
   let bx = mouseX - width / 2;
   let by = mouseY - height / 2;
   if (bx > -80 && bx < 80 && by > -5 && by < 45) {
-    setupGame();
+    setupGame(); // Nulstiller spillet inden start
     setState("game");
   }
 }

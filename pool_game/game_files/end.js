@@ -1,9 +1,7 @@
 import { setState, getState, font } from "../global_variables.js";
 import { setupBalls } from "./balls.js";
 
-export function setupEnd() { }
-
-// viser om man har vundet, eller om man er dårlig til pool
+// Viser om man har vundet, eller om man er dårlig til pool
 export function drawEnd() {
   background(30);
   push();
@@ -15,7 +13,7 @@ export function drawEnd() {
   textSize(32);
   textAlign(CENTER, CENTER);
 
-  // tegner en grøn "You Win!" eller rød "You Lose!" knap
+  // Tegner en gul "You Win!" eller hvid "You Lose!" tekst
   if (getState() === "win") {
     fill(255, 215, 0);
     text("You Win!", 0, -50);
@@ -26,6 +24,7 @@ export function drawEnd() {
     fill(180, 0, 0);
   }
 
+  // Tegner "Back to Menu" knap
   rect(0, 20, 200, 50, 8);
   fill(255);
   textSize(24);
@@ -33,12 +32,12 @@ export function drawEnd() {
   pop();
 }
 
-// trykker man på knappen kommer man tilbage til menu
+// Trykker man på knappen kommer man tilbage til menu
 export function mousePressedEnd() {
   let bx = mouseX - width / 2;
   let by = mouseY - height / 2;
   if (bx > -100 && bx < 100 && by > -5 && by < 45) {
-    setupBalls(); // nulstiller kugler til næste spil
+    setupBalls(); // Nulstiller kugler til næste spil
     setState("menu");
   }
 }
