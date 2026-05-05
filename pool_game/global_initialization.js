@@ -2,20 +2,20 @@ import { setupGame, drawGame, mousePressedGame, mouseReleasedGame, mouseMovedGam
 import { setupMenu, drawMenu, mousePressedMenu } from "./menu_files/menu.js";
 import { setupEnd, drawEnd, mousePressedEnd } from "./game_files/end.js";
 import { preloadAssets } from "./assets/configuration.js";
-import { getState } from "./global_variables.js";
+import { getState, setFont } from "./global_variables.js";
 import { drawSettings, mousePressedSettings } from "./menu_files/settings.js";
 
 
 let font;
 window.preload = function () {
   preloadAssets();
-  font = loadFont("https://cdnjs.cloudflare.com/ajax/libs/topcoat/0.8.0/font/SourceCodePro-Regular.otf");
+  loadFont("https://cdnjs.cloudflare.com/ajax/libs/topcoat/0.8.0/font/SourceCodePro-Regular.otf", f => setFont(f));
 };
 
 window.setup = function () {
   setupGame();
   setupMenu();
-  textFont(font);
+  //textFont(font);
 };
 
 window.draw = function () {
