@@ -1,5 +1,5 @@
-import { gameScale, tableHitBox, obamium } from "../global_variables.js";
-import { poolTable, obama } from "../assets/configuration.js";
+import { gameScale, tableHitBox, obamium } from "./global_variables.js";
+import { poolTable, obama } from "./configuration.js";
 
 export let tableWidth = 816 * gameScale;
 export let tableHeight = 464 * gameScale;

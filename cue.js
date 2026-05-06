@@ -1,4 +1,4 @@
-import { gameScale, getState, setState } from "../global_variables.js";
+import { gameScale, getState, setState } from "./global_variables.js";
 import { balls, ballRadius } from "./balls.js";
 import { allStopped } from "./physics.js";
 

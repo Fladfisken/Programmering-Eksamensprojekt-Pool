@@ -1,4 +1,4 @@
-import { setState, getState, font } from "../global_variables.js";
+import { setState, getState, font } from "./global_variables.js";
 import { setupBalls } from "./balls.js";
 
 // Viser om man har vundet, eller om man er dårlig til pool

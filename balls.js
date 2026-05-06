@@ -1,4 +1,4 @@
-import { gameScale, ballHitBox, obamium } from "../global_variables.js";
+import { gameScale, ballHitBox, obamium } from "./global_variables.js";
 import { playWidth, playHeight } from "./table.js";
 import { wallFric, feltFric } from "./physics.js";
 import {
@@ -7,7 +7,7 @@ import {
   eightBall, yellowStripe, blueStripe, redStripe,
   purpleStripe, orangeStripe, greenStripe, maroonStripe,
   obama
-} from "../assets/configuration.js";
+} from "./configuration.js";
 
 export let ballRadius = 9 * gameScale;
 export let ballDiameter = 2 * ballRadius;

@@ -1,5 +1,5 @@
-import { setState, getState, obamium, setObamium, font } from "../global_variables.js";
-import { setupBalls } from "../game_files/balls.js";
+import { setState, getState, obamium, setObamium, font } from "./global_variables.js";
+import { setupBalls } from "./balls.js";
 
 // Dimensioner på settings-boksen. Bruges til kollisionstjek for knapklik
 let boxW = 200;

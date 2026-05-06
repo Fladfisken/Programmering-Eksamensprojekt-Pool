@@ -1,9 +1,9 @@
-import { setupGame, drawGame, mousePressedGame, mouseReleasedGame } from "./game_files/game.js";
-import { drawMenu, mousePressedMenu } from "./menu_files/menu.js";
-import { drawEnd, mousePressedEnd } from "./game_files/end.js";
-import { preloadAssets } from "./assets/configuration.js";
+import { setupGame, drawGame, mousePressedGame, mouseReleasedGame } from "./game.js";
+import { drawMenu, mousePressedMenu } from "./menu.js";
+import { drawEnd, mousePressedEnd } from "./end.js";
+import { preloadAssets } from "./configuration.js";
 import { getState, setFont } from "./global_variables.js";
-import { drawSettings, mousePressedSettings, setupSettings } from "./menu_files/settings.js";
+import { drawSettings, mousePressedSettings, setupSettings } from "./settings.js";
 
 // Indlæs billeder og font inden spillet starter
 window.preload = function () {

@@ -1,8 +1,8 @@
-import { setState, font } from "../global_variables.js";
-import { setupGame } from "../game_files/game.js"; 
+import { setState, font } from "./global_variables.js";
+import { setupGame } from "./game.js"; 
 import { drawSettings, mousePressedSettings } from "./settings.js";
-import { poolTable } from "../assets/configuration.js";
-import { tableWidth, tableHeight } from "../game_files/table.js";
+import { poolTable } from "./configuration.js";
+import { tableWidth, tableHeight } from "./table.js";
 
 // Tegn menu
 export function drawMenu() {

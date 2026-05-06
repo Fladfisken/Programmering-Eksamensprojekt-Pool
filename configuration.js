@@ -20,22 +20,22 @@ export let obama;
 
 // Indlæser alle billeder. Kaldes i preload, så de er klar inden setup
 export function preloadAssets() {
-  cueBall = loadImage('assets/0CueBall.png');
-  yellowFull = loadImage('assets/1YellowFull.png');
-  blueFull = loadImage('assets/2BlueFull.png');
-  redFull = loadImage('assets/3RedFull.png');
-  purpleFull = loadImage('assets/4PurpleFull.png');
-  orangeFull = loadImage('assets/5OrangeFull.png');
-  greenFull = loadImage('assets/6GreenFull.png');
-  maroonFull = loadImage('assets/7MaroonFull.png');
-  eightBall = loadImage('assets/8Ball.png');
-  yellowStripe = loadImage('assets/9YellowStripe.png');
-  blueStripe = loadImage('assets/10BlueStripe.png');
-  redStripe = loadImage('assets/11RedStripe.png');
-  purpleStripe = loadImage('assets/12PurpleStripe.png');
-  orangeStripe = loadImage('assets/13OrangeStripe.png');
-  greenStripe = loadImage('assets/14GreenStripe.png');
-  maroonStripe = loadImage('assets/15MaroonStripe.png');
-  poolTable = loadImage('assets/poolTable.png')
-  obama = loadImage('assets/Obama.png')
+  cueBall = loadImage('0CueBall.png');
+  yellowFull = loadImage('1YellowFull.png');
+  blueFull = loadImage('2BlueFull.png');
+  redFull = loadImage('3RedFull.png');
+  purpleFull = loadImage('4PurpleFull.png');
+  orangeFull = loadImage('5OrangeFull.png');
+  greenFull = loadImage('6GreenFull.png');
+  maroonFull = loadImage('7MaroonFull.png');
+  eightBall = loadImage('8Ball.png');
+  yellowStripe = loadImage('9YellowStripe.png');
+  blueStripe = loadImage('10BlueStripe.png');
+  redStripe = loadImage('11RedStripe.png');
+  purpleStripe = loadImage('12PurpleStripe.png');
+  orangeStripe = loadImage('13OrangeStripe.png');
+  greenStripe = loadImage('14GreenStripe.png');
+  maroonStripe = loadImage('15MaroonStripe.png');
+  poolTable = loadImage('poolTable.png')
+  obama = loadImage('Obama.png')
 }

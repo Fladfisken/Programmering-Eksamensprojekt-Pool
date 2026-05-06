@@ -2,7 +2,7 @@ import { setupTable, drawTable } from "./table.js";
 import { setupBalls, drawBalls, balls, ballRadius } from "./balls.js";
 import { drawPhysics, allStopped } from "./physics.js";
 import { drawCue, mousePressedCue, mouseReleasedCue, setupCue } from "./cue.js";
-import { setState } from "../global_variables.js";
+import { setState } from "./global_variables.js";
 
 export function setupGame() {
   setupTable();
